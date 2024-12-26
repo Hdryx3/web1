@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Generar y Descargar JSON</title>
+    <style>
+      /* General */
+      body {
+        font-family: "Roboto", sans-serif;
+        background-color: #181818;
+        color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+      }
+
+      h1 {
+        font-size: 2.8rem;
+        margin-bottom: 25px;
+        text-align: center;
+        color: #ffa726;
+      }
+
+      .container {
+        width: 95%;
+        max-width: 850px;
+        background: #222222;
+        padding: 40px;
+        border-radius: 20px;
+        box-shadow: 0px 6px 25px rgba(0, 0, 0, 0.7);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        border: 1px solid #ffa726;
+      }
+
+      .form-group {
+        width: 100%;
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      label {
+        font-size: 1.2rem;
+        margin-bottom: 8px;
+        color: #ffa726;
+        font-weight: bold;
+      }
+
+      input,
+      select,
+      button {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ffa726;
+        border-radius: 8px;
+        font-size: 1rem;
+        outline: none;
+        box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.4);
+      }
+
+      input,
+      select {
+        background: #333333;
+        color: #ffffff;
+        margin-bottom: 12px;
+      }
+
+      input:focus,
+      select:focus {
+        border-color: #ffcc80;
+      }
+
+      button {
+        background: linear-gradient(45deg, #ffa726, #ff7043);
+        color: #ffffff;
+        font-weight: bold;
+        cursor: pointer;
+        transition: transform 0.3s, box-shadow 0.3s;
+      }
+
+      button:hover {
+        transform: translateY(-4px);
+        box-shadow: 0px 5px 15px rgba(255, 167, 38, 0.6);
+      }
+
+      .field-list {
+        width: 100%;
+        margin: 20px 0;
+        padding: 15px;
+        background: #333333;
+        border-radius: 10px;
+        max-height: 220px;
+        overflow-y: auto;
+        border: 1px solid #ffcc80;
+      }
+
+      .field-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        padding: 10px;
+        background: #444444;
+        border-radius: 8px;
+      }
+
+      .field-item span {
+        font-size: 1rem;
+        color: #ffffff;
+      }
+
+      .field-item button {
+        background: #e57373;
+        font-size: 0.9rem;
+        padding: 5px 12px;
+        border-radius: 8px;
+        border: none;
+        cursor: pointer;
+        color: #ffffff;
+        transition: background 0.3s;
+      }
+
+      .field-item button:hover {
+        background: #d32f2f;
+      }
+
+      #output {
+        width: 100%;
+        margin-top: 20px;
+        background: #333333;
+        color: #f5f5f5;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid #ffa726;
+        font-family: "Courier New", monospace;
+        overflow-y: auto;
+        max-height: 300px;
+      }
+
+      pre {
+        margin: 0;
+        line-height: 1.5;
+      }
+
+      @keyframes blink-caret {
+        from,
+        to {
+          border-color: transparent;
+        }
+        50% {
+          border-color: #ffffff;
+        }
+      }
+
+      .json-key {
+        color: #d4ac0d;
+      }
+      .json-value {
+        color: #27ae60;
+      }
+      .json-string {
+        color: #e74c3c;
+      }
+      .json-number {
+        color: #8e44ad;
+      }
+      .json-boolean {
+        color: #3498db;
+      }
+      .json-null {
+        color: #95a5a6;
+      }
+      .json-phone-number {
+        color: #229e09;
+      }
+
+      .copy-button {
+        display: none;
+        background-color: #4caf50;
+        border: none;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        font-size: 16px;
+        margin: 4px 2px;
+        cursor: pointer;
+        border-radius: 4px;
+        transition: background-color 0.3s;
+      }
+
+      .copy-button:hover {
+        background-color: #45a049;
+      }
+
+      .copy-button.show {
+        display: inline-block;
+      }
+      .butons-actions-container {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        gap: 10px;
+      }
+      #history {
+        width: 100%;
+        margin-top: 20px;
+        background: #333333;
+        color: #f5f5f5;
+        padding: 25px;
+        border-radius: 12px;
+        border: 1px solid #ffa726;
+        font-family: "Courier New", monospace;
+        overflow-y: auto;
+        max-height: 300px;
+      }
+      #preset-schemas {
+        margin-bottom: 20px;
+        background: #333333;
+        color: #ffffff;
+        padding: 12px;
+        border: 2px solid #ffa726;
+        border-radius: 8px;
+        font-size: 1rem;
+        width: 100%;
+      }
+
+      #preset-schemas option {
+        background: #333333;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Generador de JSON</h1>
+      <form id="form">
+        <div class="form-group">
+          <label for="field-name">Nombre del campo</label>
+          <input type="text" id="field-name" placeholder="Ejemplo: name" />
+        </div>
+        <div class="form-group">
+          <label for="field-type">Tipo de dato</label>
+          <select id="field-type">
+            <option value="str">Texto</option>
+            <option value="int">Número entero</option>
+            <option value="float">Número decimal</option>
+            <option value="id">ID Autoincremental</option>
+            <option value="email">Email</option>
+            <option value="bool">Booleano</option>
+            <option value="date">Fecha</option>
+            <option value="address">Dirección</option>
+            <option value="phone_number">Número de teléfono</option>
+            <option value="text">Texto Random</option>
+            <option value="url">Url Random</option>
+          </select>
+          <label for="preset-schemas">Esquemas Predefinidos</label>
+          <select id="preset-schemas" onchange="loadPresetSchema()">
+            <option value="">-- Ninguno --</option>
+            <optgroup label="Predeterminados">
+              <option value="user">Usuario</option>
+              <option value="product">Producto</option>
+              <option value="order">Pedido</option>
+              <option value="employee">Empleado</option>
+            </optgroup>
+            <optgroup label="Tus esquemas (Prosimamnte)" id="user-schemas-group"></optgroup>
+          </select>
+        </div>
+        <button type="button" onclick="addField()">Añadir Campo</button>
+        <div class="field-list" id="field-list">
+          <p>No hay campos definidos.</p>
+        </div>
+        <div class="form-group">
+          <label for="num-entries">Número de entradas</label>
+          <input type="number" id="num-entries" placeholder="Ejemplo: 10" />
+        </div>
+        <div class="form-group">
+          <label for="typing-speed">Velocidad de escritura (ms por carácter)</label>
+          <input type="number" id="typing-speed" placeholder="Ejemplo: 50" value="50" />
+        </div>
+        <div class="butons-actions-container">
+          <button type="button" class="butons-actions" id="generateBtn">Generar</button>
+          <button type="button" class="butons-actions" id="downloadBtn">Descargar JSON</button>
+          <button type="button" class="butons-actions" onclick="saveSchema()">Guardar Esquema</button>
+          <button type="button" class="butons-actions" onclick="loadSchema()">Cargar Esquema</button>
+          <button type="button" class="butons-actions" onclick="viewHistory()">Ver Historial</button>
+        </div>
+      </form>
+      <div id="output"></div>
+      <button id="copyButton" class="copy-button">Copiar JSON</button>
+      <div id="history"></div>
+    </div>
+
+    <script>
+      const fields = [];
+      const history = [];
+      let generatedJSON = null; // Variable para almacenar el JSON generado
+
+      function addField() {
+        console.log("Añadiendo campo...");
+        const fieldName = document.getElementById("field-name").value.trim();
+        const fieldType = document.getElementById("field-type").value;
+
+        if (!fieldName) {
+          alert("Por favor, ingresa un nombre para el campo.");
+          return;
+        }
+
+        if (fields.some((field) => field.name === fieldName)) {
+          alert("El nombre del campo ya existe. Por favor, elige otro nombre.");
+          return;
+        }
+
+        fields.push({ name: fieldName, type: fieldType });
+        console.log("Campo añadido:", { name: fieldName, type: fieldType });
+        updateFieldList();
+        document.getElementById("field-name").value = ""; // Limpiar input
+      }
+
+      function updateFieldList() {
+        console.log("Actualizando lista de campos...");
+        const fieldList = document.getElementById("field-list");
+        if (fields.length === 0) {
+          fieldList.innerHTML = "<p>No hay campos definidos.</p>";
+          return;
+        }
+
+        fieldList.innerHTML = fields
+          .map(
+            (field, index) => `
+                <div class="field-item">
+                    <span>${field.name} (${field.type})</span>
+                    <button onclick="removeField(${index})">Eliminar</button>
+                </div>`
+          )
+          .join("");
+      }
+
+      function removeField(index) {
+        console.log("Eliminando campo en índice:", index);
+        fields.splice(index, 1);
+        updateFieldList();
+      }
+
+      function saveSchema() {
+        const schemaName = prompt("Ingrese un nombre para el esquema:");
+        if (schemaName) {
+          localStorage.setItem(`user-schema-${schemaName}`, JSON.stringify(fields));
+          alert("Esquema guardado.");
+          updateUserSchemasList();
+        }
+      }
+      function updateUserSchemasList() {
+        const userSchemasGroup = document.getElementById("user-schemas-group");
+        userSchemasGroup.innerHTML = ""; // Limpiar opciones anteriores
+
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key.startsWith("user-schema-")) {
+            const schemaName = key.replace("user-schema-", "");
+            const option = document.createElement("option");
+            option.value = key; // Usar el nombre de la clave como valor
+            option.textContent = schemaName;
+            userSchemasGroup.appendChild(option);
+          }
+        }
+      }
+      document.addEventListener("DOMContentLoaded", updateUserSchemasList);
+
+      function loadSchema() {
+        const schemaName = prompt("Ingrese el nombre del esquema a cargar:");
+        const schema = localStorage.getItem(schemaName);
+        if (schema) {
+          fields.length = 0;
+          fields.push(...JSON.parse(schema));
+          updateFieldList();
+          alert("Esquema cargado.");
+        } else {
+          alert("Esquema no encontrado.");
+        }
+      }
+
+      async function generateJSON() {
+        console.log("Generando JSON...");
+        const numEntries = document.getElementById("num-entries").value || 10;
+        const typingSpeed = document.getElementById("typing-speed").value || 50;
+
+        if (fields.length === 0) {
+          alert("Por favor, define al menos un campo.");
+          return;
+        }
+
+        const requestData = {
+          schema: fields,
+          num_entries: parseInt(numEntries),
+        };
+        console.log("Datos enviados:", requestData);
+
+        try {
+          const response = await fetch("http://127.0.0.1:5000/generate", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+
+          if (!response.ok) {
+            throw new Error("Error al generar JSON");
+          }
+
+          const data = await response.json();
+          console.log("JSON generado:", data);
+          displayJSONWithAnimation(data, typingSpeed);
+          history.push(data);
+          exportJSON(data);
+          generatedJSON = data; // Almacenar el JSON generado
+        } catch (error) {
+          console.error("Error:", error);
+          document.getElementById("output").innerHTML = `<p style="color: red;">${error.message}</p>`;
+        }
+      }
+
+      async function copyToClipboard() {
+        const outputElement = document.getElementById("output");
+        const jsonText = outputElement.textContent;
+        try {
+          await navigator.clipboard.writeText(jsonText);
+          alert("JSON copiado al portapapeles");
+        } catch (err) {
+          console.error("Error al copiar:", err);
+          alert("Error al copiar el JSON");
+        }
+      }
+
+      function syntaxHighlight(json) {
+        json = json.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        return json.replace(
+          /("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:\s*)?|true|false|null|-?\d+(\.\d*)?([eE][+-]?\d+)?)/g,
+          function (match) {
+            let cls = "json-value";
+
+            // Si el valor es una clave (key), aplica la clase json-key
+            if (/^"/.test(match) && /:/.test(match)) {
+              cls = "json-key"; // Se aplica a la clave (key) de un objeto
+            }
+            // Si el valor es una cadena de texto (string), aplica la clase json-string
+            else if (/^"/.test(match)) {
+              cls = "json-string"; // Se aplica a los valores tipo string
+            }
+            // Si es un valor booleano (true/false), aplica la clase json-boolean
+            else if (/true|false/.test(match)) {
+              cls = "json-boolean"; // Se aplica a los valores booleanos
+            }
+            // Si es un valor null, aplica la clase json-null
+            else if (/null/.test(match)) {
+              cls = "json-null"; // Se aplica a los valores null
+            }
+            // Si es un número, aplica la clase json-number
+            else if (/-?\d+(\.\d*)?([eE][+-]?\d+)?/.test(match)) {
+              cls = "json-number"; // Se aplica a los números
+            }
+            // Si es un valor de tipo phone_number, aplica la clase json-phone-number
+            else if (/^"((\d{3}\.|\(\d{3}\)|\d{3}-)\d{3}[-\.]\d{4}(x\d+)?|001-\d{3}-\d{3}-\d{4}x\d+)"$/.test(match)) {
+              cls = "json-phone-number"; // Se aplica a los valores tipo phone_number
+            }
+
+            return `<span class="${cls}">${match}</span>`;
+          }
+        );
+      }
+
+      function displayJSONWithAnimation(data, typingSpeed) {
+        const outputElement = document.getElementById("output");
+        const copyButton = document.getElementById("copyButton");
+        const jsonString = JSON.stringify(data, null, 4);
+        const highlightedJSON = syntaxHighlight(jsonString);
+        let index = 0;
+
+        function typeNextChar() {
+          if (index < highlightedJSON.length) {
+            outputElement.innerHTML = `<pre class="typing-animation">${highlightedJSON.slice(
+              0,
+              index + 1
+            )}<span class="cursor">|</span></pre>`;
+            index++;
+            setTimeout(typeNextChar, typingSpeed); // Ajustar el tiempo para la velocidad de escritura
+          } else {
+            outputElement.innerHTML = `<pre>${highlightedJSON}</pre>`; // Eliminar el cursor al finalizar
+            copyButton.classList.add("show");
+          }
+        }
+
+        typeNextChar();
+      }
+
+      function exportJSON(data) {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "data.json";
+        a.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function viewHistory() {
+        const historyContainer = document.getElementById("history");
+        historyContainer.innerHTML = history
+          .map((data, index) => `<pre>${JSON.stringify(data, null, 2)}</pre>`)
+          .join("<hr>");
+      }
+
+      document.getElementById("copyButton").addEventListener("click", copyToClipboard);
+
+      // Evento para el botón de descarga
+      document.getElementById("downloadBtn").addEventListener("click", function (data) {
+        if (!generatedJSON) {
+          alert("Primero debes generar el JSON");
+          return;
+        }
+
+        const blob = new Blob([JSON.stringify(generatedJSON, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "datos.json";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      });
+
+      document.getElementById("generateBtn").addEventListener("click", function () {
+        generateJSON();
+      });
+
+      function handleTypeChange() {
+        const fieldType = document.getElementById("field-type").value;
+        const fieldName = document.getElementById("field-name");
+
+        if (fieldType === "id") {
+          fieldName.value = "id";
+          fieldName.disabled = true;
+        } else {
+          fieldName.disabled = false;
+          fieldName.value = "";
+        }
+      }
+
+      document.getElementById("downloadBtn").addEventListener("click", function () {
+        if (generatedJSON) {
+          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(generatedJSON));
+          const downloadAnchorNode = document.createElement("a");
+          downloadAnchorNode.setAttribute("href", dataStr);
+          downloadAnchorNode.setAttribute("download", "data.json");
+          document.body.appendChild(downloadAnchorNode);
+          downloadAnchorNode.click();
+          downloadAnchorNode.remove();
+        } else {
+          alert("Primero genera el JSON");
+        }
+      });
+      const presetSchemas = {
+        user: [
+          { name: "id", type: "id" },
+          { name: "username", type: "str" },
+          { name: "email", type: "email" },
+          { name: "active", type: "bool" },
+          { name: "created_at", type: "date" },
+          { name: "info", type: "text" },
+        ],
+        product: [
+          { name: "id", type: "id" },
+          { name: "name", type: "str" },
+          { name: "price", type: "float" },
+          { name: "stock", type: "int" },
+          { name: "available", type: "bool" },
+        ],
+        order: [
+          { name: "id", type: "id" },
+          { name: "customer_name", type: "str" },
+          { name: "amount", type: "float" },
+          { name: "address", type: "address" },
+          { name: "phone", type: "phone_number" },
+          { name: "date", type: "date" },
+        ],
+        employee: [
+          { name: "id", type: "id" },
+          { name: "full_name", type: "str" },
+          { name: "email", type: "email" },
+          { name: "phone", type: "phone_number" },
+          { name: "hire_date", type: "date" },
+          { name: "active", type: "bool" },
+          { name: "info", type: "text" },
+        ],
+      };
+      function loadPresetSchema() {
+        const select = document.getElementById("preset-schemas");
+        const selectedSchema = select.value;
+
+        // Limpiar campos actuales
+        fields.length = 0;
+
+        if (presetSchemas[selectedSchema]) {
+          // Cargar el esquema predefinido
+          fields.push(...presetSchemas[selectedSchema]);
+        } else {
+          console.warn("Esquema no encontrado o ninguno seleccionado.");
+        }
+
+        updateFieldList();
+      }
+    </script>
+  </body>
+</html>
