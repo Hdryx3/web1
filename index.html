@@ -256,6 +256,7 @@
             <option value="int">Número entero</option>
             <option value="float">Número decimal</option>
             <option value="id">ID Autoincremental</option>
+            <option value="uuid4">Uuid4 (ID Random)</option>
             <option value="email">Email</option>
             <option value="bool">Booleano</option>
             <option value="date">Fecha</option>
@@ -268,6 +269,7 @@
           <select id="preset-schemas" onchange="loadPresetSchema()">
             <option value="">-- Ninguno --</option>
             <optgroup label="Predeterminados">
+              <option value="userWithUUID4">Usuario con UUID4</option>
               <option value="user">Usuario</option>
               <option value="product">Producto</option>
               <option value="order">Pedido</option>
@@ -282,7 +284,7 @@
         </div>
         <div class="form-group">
           <label for="num-entries">Número de entradas</label>
-          <input type="number" id="num-entries" placeholder="Ejemplo: 10" />
+          <input type="number" id="num-entries" max="1000" min="0" placeholder="Ejemplo: 10" />
         </div>
         <div class="form-group">
           <label for="typing-speed">Velocidad de escritura (ms por carácter)</label>
@@ -415,7 +417,19 @@
             body: JSON.stringify(requestData),
           });
 
+          // Comprobamos si el servidor devuelve un error 400 específico
           if (!response.ok) {
+            if (response.status === 400) {
+              const errorData = await response.json();
+              if (errorData.error && errorData.error.includes("Número de entradas excesivo")) {
+                // Mostrar un mensaje específico cuando el número de entradas es excesivo
+                document.getElementById("output").innerHTML = `<p style="color: red;">${errorData.error}</p>
+                <p style="color: red;">Por favor, reduce el número de entradas.</p>
+                <p style="color: red;">El límite actual es de 1000 entradas.</p>
+                `;
+                return;
+              }
+            }
             throw new Error("Error al generar JSON");
           }
 
@@ -580,6 +594,16 @@
           { name: "created_at", type: "date" },
           { name: "info", type: "text" },
         ],
+
+        userWithUUID4: [
+          { name: "id", type: "uuid4" },
+          { name: "username", type: "str" },
+          { name: "email", type: "email" },
+          { name: "active", type: "bool" },
+          { name: "created_at", type: "date" },
+          { name: "info", type: "text" },
+        ],
+
         product: [
           { name: "id", type: "id" },
           { name: "name", type: "str" },
