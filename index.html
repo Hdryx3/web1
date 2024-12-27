@@ -6,6 +6,7 @@
     <link rel="icon" href="/jsonfavicon.ico" type="image/x-ico" />
     <title>Generar y Descargar JSON</title>
     <style>
+      @import url("https://fonts.googleapis.com/css2?family=Rye&display=swap");
       /* General */
       body {
         font-family: "Inter", sans-serif; /* Fuente moderna */
@@ -139,13 +140,30 @@
       .field-item button:hover {
         background: #d32f2f;
       }
+      #history {
+        width: 100%;
+        margin-top: 20px;
+        color: #00ff00; /* Verde clásico de las terminales antiguas */
+        padding: 20px;
+        border-radius: 5px;
+        border: 2px solid #14121b; /* Borde verde */
+        font-family: "Courier New", monospace;
+        font-size: 1.1rem;
+        line-height: 1.6;
+        overflow-y: auto;
+        max-height: 300px;
+        box-shadow: 0 0 20px rgb(22 26 25);
+        white-space: pre-wrap; /* Permite que el texto se ajuste correctamente */
+        word-wrap: break-word; /* Evita que el texto se desborde */
+        background: linear-gradient(90deg, #171717, #313131);
+        text-align: left;
+      }
 
       /* Estilo del JSON */
       /* Estilo Retro para el Output (Terminal) */
       #output {
         width: 100%;
         margin-top: 20px;
-        background: #0d0d0d;
         color: #00ff00; /* Verde clásico de las terminales antiguas */
         padding: 20px;
         border-radius: 5px;
@@ -253,6 +271,29 @@
           border-color: #4e91f6;
         }
       }
+      .titles {
+        color: #f64e8e;
+        font-family: "Rye", cursive;
+        animation: infiniteslickereffect 1 step-end infinite;
+      }
+      @keyframes infiniteslickereffect {
+        from,
+        to {
+          color: #4e91f6;
+        }
+        50% {
+          color: #1e79e4;
+        }
+        60% {
+          color: #4e91f6;
+        }
+        80% {
+          color: #1e79e4;
+        }
+        100% {
+          color: #4e91f6;
+        }
+      }
     </style>
   </head>
   <body>
@@ -312,7 +353,12 @@
           <button type="button" class="butons-actions" onclick="viewHistory()">Ver Historial</button>
         </div>
       </form>
-      <div id="output"></div>
+      <div id="output">
+        <h1 class="titles">By JsonGenerator __________________________</h1>
+      </div>
+      <button type="button" class="butons-actions" id="stopBtn">Detener</button>
+      <button type="button" class="butons-actions" id="resumeBtn">Reanudar</button>
+      <button type="button" class="butons-actions" id="clearBtn">Limpiar</button>
       <button id="copyButton" class="copy-button">Copiar JSON</button>
       <div id="history"></div>
     </div>
@@ -405,9 +451,58 @@
           alert("Esquema no encontrado.");
         }
       }
+      let isGenerating = false; // Flag para controlar la generación
+      let typingTimeout; // Variable para almacenar el timeout de la escritura
+      // Botón Detener
+      document.getElementById("stopBtn").addEventListener("click", function () {
+        isGenerating = false; // Detenemos la generación
+        clearTimeout(typingTimeout); // Detenemos el timeout de la animación de escritura
+        console.log("Generación detenida.");
+      });
+
+      // Botón Reanudar
+      document.getElementById("resumeBtn").addEventListener("click", function () {
+        if (!isGenerating && generatedJSON) {
+          isGenerating = true;
+          displayJSONWithAnimation(generatedJSON, document.getElementById("typing-speed").value || 50);
+          console.log("Generación reanudada.");
+        } else {
+          alert("Primero genera el JSON.");
+        }
+      });
+      // Botón Limpiar
+      document.getElementById("clearBtn").addEventListener("click", function () {
+        document.getElementById("output").innerHTML = ""; // Limpiar la salida
+        document.getElementById("history").innerHTML = ""; // Limpiar historial
+        generatedJSON = null; // Limpiar el JSON generado
+
+        console.log("Contenido limpiado.");
+      });
 
       async function generateJSON() {
+        isGenerating = true; // Come
+
+        if (isGenerating) {
+          const confirmRestart = confirm(
+            "Ya se está generando un JSON. ¿Deseas detener la generación actual y comenzar una nueva?"
+          );
+          if (!confirmRestart) {
+            return; // Si el usuario no confirma, no hacemos nada
+          }
+
+          // Detener la generación actual
+          isGenerating = false;
+          clearTimeout(typingTimeout); // Detener cualquier animación en curso
+          document.getElementById("output").innerHTML = ""; // Limpiar la salida actual
+        }
+
         console.log("Generando JSON...");
+
+        // Limpiar el historial y el área de salida antes de generar un nuevo JSON
+        document.getElementById("output").innerHTML = ""; // Limpiar la salida
+        document.getElementById("history").innerHTML = ""; // Limpiar historial
+        generatedJSON = null; // Limpiar el JSON anterior
+
         const numEntries = document.getElementById("num-entries").value || 10;
         const typingSpeed = document.getElementById("typing-speed").value || 50;
 
@@ -436,11 +531,9 @@
             if (response.status === 400) {
               const errorData = await response.json();
               if (errorData.error && errorData.error.includes("Número de entradas excesivo")) {
-                // Mostrar un mensaje específico cuando el número de entradas es excesivo
                 document.getElementById("output").innerHTML = `<p style="color: red;">${errorData.error}</p>
-                <p style="color: red;">Por favor, reduce el número de entradas.</p>
-                <p style="color: red;">El límite actual es de 1000 entradas.</p>
-                `;
+        <p style="color: red;">Por favor, reduce el número de entradas.</p>
+        <p style="color: red;">El límite actual es de 1000 entradas.</p>`;
                 return;
               }
             }
@@ -450,15 +543,16 @@
           const data = await response.json();
           console.log("JSON generado:", data);
           displayJSONWithAnimation(data, typingSpeed);
-          history.push(data);
 
-          generatedJSON = data; // Almacenar el JSON generado
+          // Almacenar el JSON generado y agregarlo al historial
+          generatedJSON = data;
+          history.push(data); // Agregar al historial
         } catch (error) {
           console.error("Error:", error);
           document.getElementById("output").innerHTML = `<p style="color: red;">${error.message}</p>`;
+          isGenerating = false;
         }
       }
-
       async function copyToClipboard() {
         const outputElement = document.getElementById("output");
         const jsonText = outputElement.textContent;
@@ -508,35 +602,69 @@
         );
       }
 
+      let index = 0; // Índice de la animación que se guardará
+
       function displayJSONWithAnimation(data, typingSpeed) {
         const outputElement = document.getElementById("output");
-        const copyButton = document.getElementById("copyButton");
         const jsonString = JSON.stringify(data, null, 4);
         const highlightedJSON = syntaxHighlight(jsonString);
-        let index = 0;
 
-        function typeNextChar() {
+        // Si no está generando, comenzamos la animación desde el índice guardado
+        if (!isGenerating) {
+          isGenerating = true;
+          typeNextChar(highlightedJSON, outputElement, typingSpeed);
+        } else {
+          // Si ya está generando, reanudamos desde el índice guardado
+          typeNextChar(highlightedJSON, outputElement, typingSpeed);
+        }
+
+        function typeNextChar(highlightedJSON, outputElement, typingSpeed) {
+          if (!isGenerating) return; // Si la generación está detenida, dejamos de escribir
           if (index < highlightedJSON.length) {
             outputElement.innerHTML = `<pre class="typing-animation">${highlightedJSON.slice(
               0,
               index + 1
             )}<span class="cursor">|</span></pre>`;
             index++;
-            setTimeout(typeNextChar, typingSpeed); // Ajustar el tiempo para la velocidad de escritura
+            setTimeout(() => typeNextChar(highlightedJSON, outputElement, typingSpeed), typingSpeed); // Ajustar el tiempo para la velocidad de escritura
+
+            // Desplazar hacia abajo en la vista
+            outputElement.scrollTop = outputElement.scrollHeight;
           } else {
             outputElement.innerHTML = `<pre>${highlightedJSON}</pre>`; // Eliminar el cursor al finalizar
-            copyButton.classList.add("show");
+            copyButton.classList.add("show"); // Mostrar el botón de copiar cuando termine de mostrar el JSON
           }
         }
+      }
 
-        typeNextChar();
+      // Función para manejar el botón de generación y pausa
+      function toggleGenerate() {
+        if (isGenerating) {
+          isGenerating = false; // Detener la animación
+        } else {
+          // Reanudar desde el índice guardado
+          isGenerating = true;
+          typeNextChar(highlightedJSON, outputElement, typingSpeed);
+        }
       }
 
       function viewHistory() {
         const historyContainer = document.getElementById("history");
+
+        if (history.length === 0) {
+          historyContainer.innerHTML = "<p>No hay historial.</p>";
+          return;
+        }
+
         historyContainer.innerHTML = history
-          .map((data, index) => `<pre>${JSON.stringify(data, null, 2)}</pre>`)
-          .join("<hr>");
+          .map((item) => {
+            // Aplicamos el resaltado de sintaxis al JSON generado en el historial
+            const highlightedJson = syntaxHighlight(JSON.stringify(item, null, 2));
+            return `<div class="history-item">
+                <pre>${highlightedJson}</pre>
+              </div>`;
+          })
+          .join("");
       }
 
       document.getElementById("copyButton").addEventListener("click", copyToClipboard);
