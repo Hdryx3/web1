@@ -8,9 +8,9 @@
     <style>
       /* General */
       body {
-        font-family: "Roboto", sans-serif;
-        background-color: #181818;
-        color: #f5f5f5;
+        font-family: "Inter", sans-serif; /* Fuente moderna */
+        background-color: #f0f2f5; /* Fondo claro */
+        color: #333333; /* Texto oscuro */
         margin: 0;
         padding: 0;
         display: flex;
@@ -21,36 +21,43 @@
       }
 
       h1 {
-        font-size: 2.8rem;
-        margin-bottom: 25px;
+        font-size: 3rem;
+        margin-bottom: 20px;
         text-align: center;
-        color: #ffa726;
+        color: #4e91f6; /* Azul suave */
+        font-weight: 600;
       }
 
       .container {
-        width: 95%;
-        max-width: 850px;
-        background: #222222;
-        padding: 40px;
-        border-radius: 20px;
-        box-shadow: 0px 6px 25px rgba(0, 0, 0, 0.7);
+        width: 100%;
+        max-width: 900px;
+        background: #ffffff; /* Fondo blanco */
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0px 10px 40px rgba(0, 0, 0, 0.1); /* Sombra sutil */
         display: flex;
         flex-direction: column;
         align-items: center;
-        border: 1px solid #ffa726;
+        border: 1px solid #4e91f6;
       }
 
+      h1,
+      label {
+        font-family: "Inter", sans-serif;
+      }
+
+      /* Estilo de los campos */
       .form-group {
         width: 100%;
-        margin-bottom: 20px;
+        margin-bottom: 15px;
         display: flex;
         flex-direction: column;
       }
 
       label {
-        font-size: 1.2rem;
+        font-size: 1rem;
         margin-bottom: 8px;
-        color: #ffa726;
+        color: #333333;
         font-weight: bold;
       }
 
@@ -59,47 +66,48 @@
       button {
         width: 100%;
         padding: 12px;
-        border: 2px solid #ffa726;
+        border: 1px solid #ccc;
         border-radius: 8px;
         font-size: 1rem;
         outline: none;
-        box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.4);
+        box-shadow: inset 0px 2px 6px rgba(0, 0, 0, 0.1);
       }
 
       input,
       select {
-        background: #333333;
-        color: #ffffff;
+        background: #fafafa; /* Fondo claro */
+        color: #333333; /* Texto oscuro */
         margin-bottom: 12px;
       }
 
       input:focus,
       select:focus {
-        border-color: #ffcc80;
+        border-color: #4e91f6; /* Azul al foco */
       }
 
       button {
-        background: linear-gradient(45deg, #ffa726, #ff7043);
+        background: linear-gradient(45deg, #4e91f6, #1e79e4); /* Degradado suave */
         color: #ffffff;
-        font-weight: bold;
+        font-weight: 600;
         cursor: pointer;
         transition: transform 0.3s, box-shadow 0.3s;
       }
 
       button:hover {
         transform: translateY(-4px);
-        box-shadow: 0px 5px 15px rgba(255, 167, 38, 0.6);
+        box-shadow: 0px 5px 15px rgba(78, 145, 246, 0.6);
       }
 
+      /* Estilo de la lista de campos */
       .field-list {
         width: 100%;
         margin: 20px 0;
         padding: 15px;
-        background: #333333;
-        border-radius: 10px;
+        background: #f7f7f7;
+        border-radius: 8px;
         max-height: 220px;
         overflow-y: auto;
-        border: 1px solid #ffcc80;
+        border: 1px solid #ccc;
       }
 
       .field-item {
@@ -108,13 +116,13 @@
         align-items: center;
         margin-bottom: 12px;
         padding: 10px;
-        background: #444444;
+        background: #f1f1f1;
         border-radius: 8px;
       }
 
       .field-item span {
         font-size: 1rem;
-        color: #ffffff;
+        color: #333333;
       }
 
       .field-item button {
@@ -132,17 +140,49 @@
         background: #d32f2f;
       }
 
+      /* Estilo del JSON */
+      /* Estilo Retro para el Output (Terminal) */
       #output {
         width: 100%;
         margin-top: 20px;
-        background: #333333;
-        color: #f5f5f5;
-        padding: 25px;
-        border-radius: 12px;
-        border: 1px solid #ffa726;
+        background: #0d0d0d;
+        color: #00ff00; /* Verde clásico de las terminales antiguas */
+        padding: 20px;
+        border-radius: 5px;
+        border: 2px solid #14121b; /* Borde verde */
         font-family: "Courier New", monospace;
+        font-size: 1.1rem;
+        line-height: 1.6;
         overflow-y: auto;
         max-height: 300px;
+        box-shadow: 0 0 20px rgb(22 26 25);
+        white-space: pre-wrap; /* Permite que el texto se ajuste correctamente */
+        word-wrap: break-word; /* Evita que el texto se desborde */
+        background: linear-gradient(90deg, #171717, #313131);
+        text-align: left;
+      }
+      /* Personaliza el tamaño de la barra de desplazamiento */
+      #output::-webkit-scrollbar {
+        width: 12px; /* Ancho de la barra de desplazamiento */
+        height: 12px; /* Altura de la barra horizontal */
+      }
+
+      /* Personaliza el fondo de la barra de desplazamiento */
+      #output::-webkit-scrollbar-track {
+        background: #201e1e; /* Color de fondo */
+        border-radius: 10px; /* Bordes redondeados */
+      }
+
+      /* Personaliza el control deslizante (thumb) */
+      #output::-webkit-scrollbar-thumb {
+        background: #252525; /* Color del control deslizante */
+        border-radius: 10px; /* Bordes redondeados */
+        border: 2px solid #f1f1f1; /* Borde alrededor del thumb */
+      }
+
+      /* Personaliza el control deslizante cuando se pasa el mouse */
+      #output::-webkit-scrollbar-thumb:hover {
+        background: #141414; /* Color al hacer hover */
       }
 
       pre {
@@ -150,38 +190,35 @@
         line-height: 1.5;
       }
 
-      @keyframes blink-caret {
-        from,
-        to {
-          border-color: transparent;
-        }
-        50% {
-          border-color: #ffffff;
-        }
-      }
-
       .json-key {
-        color: #d4ac0d;
-      }
-      .json-value {
-        color: #27ae60;
-      }
-      .json-string {
-        color: #e74c3c;
-      }
-      .json-number {
-        color: #8e44ad;
-      }
-      .json-boolean {
-        color: #3498db;
-      }
-      .json-null {
-        color: #95a5a6;
-      }
-      .json-phone-number {
-        color: #229e09;
+        color: #f39c12; /* Color para claves */
       }
 
+      .json-value {
+        color: #27ae60; /* Color para valores */
+      }
+
+      .json-string {
+        color: #e74c3c; /* Color para cadenas */
+      }
+
+      .json-number {
+        color: #8e44ad; /* Color para números */
+      }
+
+      .json-boolean {
+        color: #3498db; /* Color para booleanos */
+      }
+
+      .json-null {
+        color: #95a5a6; /* Color para null */
+      }
+
+      .json-phone-number {
+        color: #229e09; /* Color para números de teléfono */
+      }
+
+      /* Estilo de los botones */
       .copy-button {
         display: none;
         background-color: #4caf50;
@@ -189,9 +226,7 @@
         color: white;
         padding: 10px 20px;
         text-align: center;
-        text-decoration: none;
         font-size: 16px;
-        margin: 4px 2px;
         cursor: pointer;
         border-radius: 4px;
         transition: background-color 0.3s;
@@ -204,40 +239,19 @@
       .copy-button.show {
         display: inline-block;
       }
-      .butons-actions-container {
-        display: flex;
-        justify-content: space-between;
-        width: 100%;
-        margin-top: 20px;
-        margin-bottom: 20px;
-        gap: 10px;
-      }
-      #history {
-        width: 100%;
-        margin-top: 20px;
-        background: #333333;
-        color: #f5f5f5;
-        padding: 25px;
-        border-radius: 12px;
-        border: 1px solid #ffa726;
-        font-family: "Courier New", monospace;
-        overflow-y: auto;
-        max-height: 300px;
-      }
-      #preset-schemas {
-        margin-bottom: 20px;
-        background: #333333;
-        color: #ffffff;
-        padding: 12px;
-        border: 2px solid #ffa726;
-        border-radius: 8px;
-        font-size: 1rem;
-        width: 100%;
+
+      .blink-caret {
+        animation: blink-caret 0.8s step-end infinite;
       }
 
-      #preset-schemas option {
-        background: #333333;
-        color: #ffffff;
+      @keyframes blink-caret {
+        from,
+        to {
+          border-color: transparent;
+        }
+        50% {
+          border-color: #4e91f6;
+        }
       }
     </style>
   </head>
@@ -437,7 +451,7 @@
           console.log("JSON generado:", data);
           displayJSONWithAnimation(data, typingSpeed);
           history.push(data);
-          exportJSON(data);
+
           generatedJSON = data; // Almacenar el JSON generado
         } catch (error) {
           console.error("Error:", error);
@@ -518,16 +532,6 @@
         typeNextChar();
       }
 
-      function exportJSON(data) {
-        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "data.json";
-        a.click();
-        URL.revokeObjectURL(url);
-      }
-
       function viewHistory() {
         const historyContainer = document.getElementById("history");
         historyContainer.innerHTML = history
@@ -538,21 +542,20 @@
       document.getElementById("copyButton").addEventListener("click", copyToClipboard);
 
       // Evento para el botón de descarga
-      document.getElementById("downloadBtn").addEventListener("click", function (data) {
-        if (!generatedJSON) {
+      document.getElementById("downloadBtn").addEventListener("click", function () {
+        if (generatedJSON) {
+          const blob = new Blob([JSON.stringify(generatedJSON, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "datos.json";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        } else {
           alert("Primero debes generar el JSON");
-          return;
         }
-
-        const blob = new Blob([JSON.stringify(generatedJSON, null, 2)], { type: "application/json" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "datos.json";
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
       });
 
       document.getElementById("generateBtn").addEventListener("click", function () {
