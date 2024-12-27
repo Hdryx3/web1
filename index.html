@@ -575,19 +575,30 @@
         }
       }
 
-      document.getElementById("downloadBtn").addEventListener("click", function () {
+      document.getElementById("downloadBtn").addEventListener("click", function (event) {
+        // Prevenir que el evento se propague
+        event.stopPropagation();
+
         if (generatedJSON) {
-          const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(generatedJSON));
-          const downloadAnchorNode = document.createElement("a");
-          downloadAnchorNode.setAttribute("href", dataStr);
-          downloadAnchorNode.setAttribute("download", "data.json");
-          document.body.appendChild(downloadAnchorNode);
-          downloadAnchorNode.click();
-          downloadAnchorNode.remove();
+          // Creamos un Blob para generar el archivo
+          const blob = new Blob([JSON.stringify(generatedJSON, null, 2)], { type: "application/json" });
+          const url = URL.createObjectURL(blob);
+
+          // Creamos un enlace solo una vez y lo usamos
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = "datos.json";
+          document.body.appendChild(a);
+          a.click();
+
+          // Limpiamos después de la descarga
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url); // Liberamos el objeto URL
         } else {
-          alert("Primero genera el JSON");
+          alert("Primero debes generar el JSON");
         }
       });
+
       const presetSchemas = {
         user: [
           { name: "id", type: "id" },
